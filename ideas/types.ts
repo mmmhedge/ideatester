@@ -35,4 +35,9 @@ export type Idea = {
   theme?: {
     accent?: string; // tailwind class fragment, e.g. "indigo" or "emerald"
   };
+  /**
+   * Optional vibe note fed to the brand generator. Free-text steering only.
+   * E.g. "feels like a neighborhood diner, not a startup."
+   */
+  vibe?: string;
 };

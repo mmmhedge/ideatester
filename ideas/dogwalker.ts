@@ -34,4 +34,5 @@ export const dogwalker: Idea = {
     conversionValue: 5,
   },
   theme: { accent: "emerald" },
+  vibe: "feels like a neighborhood service run by people who own dogs, not a tech startup",
 };

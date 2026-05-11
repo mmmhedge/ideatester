@@ -15,6 +15,47 @@ npm run dev
 - Home page lists ideas: `http://localhost:3000`
 - Example ideas: `/dogwalker`, `/aicoach`
 
+## Auto-generate the brand
+
+```bash
+# After registering an idea in ideas/index.ts:
+npm run brand -- dogwalker
+
+# Skip image gen (text only — useful for iterating quickly):
+npm run brand -- dogwalker --no-image
+```
+
+What you get:
+
+- `ideas/<slug>.brand.json` — name, tagline, font key, palette key, monogram, image prompt
+- `public/<slug>/hero.jpg` — editorial-style hero image
+- The page at `/<slug>` automatically picks up the brand: chosen Google Font, palette as background + accent, wordmark in the header, hero image above the CTA
+
+How it stays out of cringe territory:
+
+- **Curated choices, not free-form.** Claude picks from 8 hand-selected fonts and 9 hand-selected palettes. No invented hex codes, no AI logo generation.
+- **Hard style guide.** A list of banned phrases (`leverage`, `unlock`, `revolutionize`, etc.) and voice rules is enforced as the system prompt for every generation. See `lib/brand/style.ts` — edit it to taste.
+- **Editorial-photo hero, never illustration.** Image prompts are wrapped in a fixed style suffix (`35mm film, natural daylight, shallow DoF, no text, no logos, no faces at camera`) so output reads as real, not AI.
+- **Wordmark, not logo.** The name renders in the chosen font as a typographic mark — looks intentional, not generated.
+
+Cost per idea: ~$0.05 (Claude call ~$0.01 + one image ~$0.04). Time: ~30s.
+
+### Customizing
+
+- Don't like a name? Re-run the script, or hand-edit `ideas/<slug>.brand.json`.
+- Add a vibe steer in the idea config: `vibe: "feels like a neighborhood diner, not a startup"`. The generator reads it.
+- Want more fonts/palettes? Add to `lib/brand/fonts.ts` / `lib/brand/palettes.ts`.
+- Tighten the voice? Edit `lib/brand/style.ts` — the style guide is data, not code.
+
+### Image provider
+
+Set ONE of:
+
+- `OPENAI_API_KEY` → uses `gpt-image-1` (needs OpenAI org verification, but easy once verified)
+- `REPLICATE_API_TOKEN` → uses Flux 1.1 Pro on Replicate (simpler signup)
+
+If neither is set, the script generates text only and skips the hero image.
+
 ## Add a new idea
 
 1. Create `ideas/myidea.ts` exporting an `Idea` (see `ideas/types.ts`).
