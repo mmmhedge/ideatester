@@ -1,10 +1,12 @@
 import type { Idea } from "./types";
 import { dogwalker } from "./dogwalker";
 import { aicoach } from "./aicoach";
+import { plume } from "./plume";
 
 export const ideas: Record<string, Idea> = {
   [dogwalker.slug]: dogwalker,
   [aicoach.slug]: aicoach,
+  [plume.slug]: plume,
 };
 
 export function getIdea(slug: string): Idea | undefined {

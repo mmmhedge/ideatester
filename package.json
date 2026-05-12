@@ -8,13 +8,17 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "brand": "tsx --env-file=.env.local scripts/brand.ts"
+    "brand": "tsx --env-file=.env.local scripts/brand.ts",
+    "litepaper": "tsx --env-file=.env.local scripts/litepaper.ts",
+    "x": "tsx --env-file=.env.local scripts/x.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.1",
+    "marked": "^15.0.12",
     "next": "^16.2.6",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "twitter-api-v2": "^1.29.0"
   },
   "devDependencies": {
     "@types/node": "22.10.5",

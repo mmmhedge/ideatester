@@ -11,6 +11,7 @@ import { FAQ } from "@/components/FAQ";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { BrandHead } from "@/components/BrandHead";
 import { Wordmark } from "@/components/Wordmark";
+import { CryptoPage } from "@/components/crypto/CryptoPage";
 
 export function generateStaticParams() {
   return listIdeas().map((i) => ({ slug: i.slug }));
@@ -35,6 +36,10 @@ export default async function IdeaPage(
   const { slug } = await params;
   const idea = getIdea(slug);
   if (!idea) notFound();
+
+  if (idea.kind === "crypto") {
+    return <CryptoPage idea={idea} />;
+  }
 
   const brand = getBrand(slug);
   const palette = brand ? PALETTES[brand.palette] : undefined;

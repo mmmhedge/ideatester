@@ -9,4 +9,5 @@ out/
 next-env.d.ts
 data/leads.jsonl
 data/events.jsonl
+.x-tokens.json
 .DS_Store

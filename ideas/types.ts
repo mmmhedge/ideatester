@@ -6,8 +6,47 @@ export type FormField = {
   placeholder?: string;
 };
 
+export type CryptoFields = {
+  chain?: string;
+  category?: string;
+  status?: "concept" | "testnet" | "audit" | "mainnet";
+  /** 1-2 sentence problem statement. Concrete. */
+  problem: string;
+  /** 1-2 sentence solution. Names primitives. */
+  solution: string;
+  /** The single insight that makes the thing work. */
+  keyInsight: string;
+  architecture: {
+    overview: string;
+    components: { name: string; role: string }[];
+  };
+  tokenomics?: {
+    symbol: string;
+    totalSupply: string;
+    utility: string;
+    allocations: { name: string; pct: number; vesting?: string }[];
+  };
+  roadmap?: {
+    phase: string;
+    status: "shipped" | "in-progress" | "planned";
+    items: string[];
+  }[];
+  links?: {
+    x?: string;
+    github?: string;
+    docs?: string;
+    discord?: string;
+    telegram?: string;
+    mirror?: string;
+  };
+};
+
 export type Idea = {
   slug: string;
+  /** Renderer template. Defaults to "saas". */
+  kind?: "saas" | "crypto";
+  /** Required when kind === "crypto". */
+  crypto?: CryptoFields;
   title: string;
   metaDescription?: string;
   hero: {
