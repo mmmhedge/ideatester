@@ -84,6 +84,29 @@ Step-by-step. Every link you need is here — no searching.
 
 ---
 
+## 1b. (Optional) Generate a promo video (~3 min, ~$0.30–$1)
+
+For Instagram Reels / Stories, a short promo video usually beats a static image.
+
+```bash
+npm run promo -- myidea --dry-run        # preview the plan + overlay text
+npm run promo -- myidea                  # actually generate (~$0.30 via Luma)
+# Premium with audio (Veo 3):
+npm run promo -- myidea --model google/veo-3
+```
+
+Output: `public/myidea/promo-9x16.mp4` (Reels/Story) + `public/myidea/promo-1x1.mp4` (feed).
+
+The consumer preset uses your brand hero image as the starting frame (image-to-video) when `PUBLIC_BASE_URL` is set — gives visual continuity with the landing page.
+
+**Add background music (optional):** drop an mp3 at `public/promo/music/consumer.mp3` and rerun. The renderer mixes it in at 50% under whatever audio the model produced.
+
+**AI video is imperfect:** expect to re-roll ~1 in 3. Bad clips usually = the visual prompt was too abstract. The script prints the plan; edit `lib/promo/presets.ts` if you want to tighten the style globally.
+
+In Ads Manager, upload the 9:16 version for Reels/Stories placements and the 1:1 for feed.
+
+---
+
 ## 2. Launch the Instagram ad (~10 min)
 
 Go to: <https://adsmanager.facebook.com/adsmanager/manage/campaigns>

@@ -2,10 +2,10 @@
 
 Modular landing pages for testing ideas / PMF cheap and fast. One config file = one landing page. Two launch tracks:
 
-- **SaaS / consumer** — Instagram ads, hero image + lead form. → **`docs/RUNBOOK-saas.md`**
-- **Crypto / technical** — X thread + litepaper + Promote post. → **`docs/RUNBOOK-crypto.md`**
+- **SaaS / consumer** — Instagram ads, hero image + lead form, optional promo Reel. → **`docs/RUNBOOK-saas.md`**
+- **Crypto / technical** — X thread + litepaper + Promote post, optional promo video. → **`docs/RUNBOOK-crypto.md`**
 
-Server-side conversion tracking (Meta CAPI, GA4, PostHog), one-command brand generation, automatic litepaper generation, X posting via API. Stack: Next.js (App Router) + TypeScript + Tailwind on Vercel free tier. Cost per validated/killed idea: $20–110 depending on ad spend.
+Server-side conversion tracking (Meta CAPI, GA4, PostHog), one-command brand generation, automatic litepaper generation, X posting via API, AI promo video generation with on-brand overlays. Stack: Next.js (App Router) + TypeScript + Tailwind on Vercel free tier. Cost per validated/killed idea: $20–110 depending on ad spend.
 
 ## Quickstart
 

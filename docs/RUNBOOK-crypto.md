@@ -79,6 +79,25 @@ npm run litepaper -- myidea
 - For a PDF: open the page → browser print → "Save as PDF". Print CSS is already wired (white background, no nav).
 - For a downloadable PDF on the site: print once, save to `public/<slug>/litepaper.pdf`, link to it from the page.
 
+## 2b. (Optional) Generate a promo video (~3 min, ~$0.30–$1)
+
+A short technical promo punches above its weight on X. The `crypto` preset is locked to a dark/monospace/single-green-accent look — feels like Anoma/Optimism announcement videos, not memecoin clips.
+
+```bash
+npm run promo -- myidea --dry-run        # preview prompt + overlays
+npm run promo -- myidea                  # generate (~$0.30 via Luma)
+# Premium with audio (Veo 3):
+npm run promo -- myidea --model google/veo-3
+```
+
+Output: `public/myidea/promo-9x16.mp4` + `promo-1x1.mp4`. Attach to the launch thread (X allows one video per tweet; put it in the opening post — it dramatically lifts dwell time and the algorithm rewards it).
+
+**The promo video tweet does NOT need a URL.** Keep the URL in a separate, later post in the thread to stay on the cheap API tier.
+
+Add ambient music: drop an mp3 at `public/promo/music/crypto.mp3`. The renderer mixes it in.
+
+---
+
 ## 3. Generate X post drafts (~30 s, ~$0.01)
 
 ```bash
