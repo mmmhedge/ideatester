@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MATS Prep — 21-Day Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1c2230;
+    --border: #2a3142;
+    --text: #e6e8ee;
+    --muted: #8a93a6;
+    --accent: #6ea8fe;
+    --accent-2: #7ad6a4;
+    --warn: #ffb86b;
+    --done: #2a3a2e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif; }
+  header { padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 0.2px; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  button { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.warn:hover { border-color: var(--warn); color: var(--warn); }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 32px 80px; }
+  .overall { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .overall .bar { background: var(--panel-2); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 8px; }
+  .overall .bar > div { background: linear-gradient(90deg, var(--accent), var(--accent-2)); height: 100%; transition: width .3s ease; }
+  .overall .meta { display: flex; gap: 24px; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .week { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+  .week h2 { margin: 0 0 4px; font-size: 16px; }
+  .week .week-meta { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .week .week-bar { background: var(--panel-2); border-radius: 999px; height: 6px; overflow: hidden; margin-bottom: 14px; }
+  .week .week-bar > div { background: var(--accent-2); height: 100%; }
+  details.day { border-top: 1px solid var(--border); padding: 10px 0; }
+  details.day:first-of-type { border-top: 0; }
+  details.day summary { cursor: pointer; display: flex; align-items: center; gap: 10px; list-style: none; }
+  details.day summary::-webkit-details-marker { display: none; }
+  details.day summary .chev { color: var(--muted); transition: transform .15s; display: inline-block; width: 14px; }
+  details.day[open] summary .chev { transform: rotate(90deg); }
+  details.day summary .title { font-weight: 600; }
+  details.day summary .pill { margin-left: auto; font-size: 11px; color: var(--muted); padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; }
+  details.day summary .pill.done { color: var(--accent-2); border-color: var(--accent-2); background: var(--done); }
+  .tasks { padding: 10px 0 4px 26px; }
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 4px 0; }
+  .task input[type=checkbox] { margin-top: 3px; accent-color: var(--accent-2); }
+  .task label { flex: 1; cursor: pointer; }
+  .task label.done { color: var(--muted); text-decoration: line-through; }
+  textarea.notes { width: 100%; margin-top: 8px; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px; font-family: inherit; font-size: 13px; resize: vertical; min-height: 60px; }
+  footer { color: var(--muted); font-size: 12px; text-align: center; padding: 20px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>MATS Prep — 21-Day Dashboard</h1>
+    <div class="sub">Tick boxes as you go. Progress saves locally to this browser. <a href="README.md">README</a> · <a href="04-Day-by-Day-Plan.md">Plan</a></div>
+  </div>
+  <div class="actions">
+    <button onclick="expandAll(true)">Expand all</button>
+    <button onclick="expandAll(false)">Collapse all</button>
+    <button onclick="exportJSON()">Export</button>
+    <button onclick="importJSON()">Import</button>
+    <button class="warn" onclick="resetAll()">Reset</button>
+  </div>
+</header>
+
+<main>
+  <div class="overall">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
+      <div style="font-size:24px;font-weight:600;" id="overallPct">0%</div>
+      <div style="color:var(--muted);" id="overallCount">0 of 0 tasks complete</div>
+    </div>
+    <div class="bar"><div id="overallBar" style="width:0%"></div></div>
+    <div class="meta">
+      <div>Start date: <span id="startDate" style="color:var(--text)">—</span> <button onclick="setStartDate()" style="padding:2px 8px;font-size:11px;">Set</button></div>
+      <div>Today: <span id="dayLabel" style="color:var(--text)">—</span></div>
+    </div>
+  </div>
+
+  <div id="weeks"></div>
+
+  <footer>21 days. One project. Ship daily. <br/>Local-only — no data leaves your browser.</footer>
+</main>
+
+<script>
+const PLAN = [
+  {
+    week: 1, title: "Week 1 — ML + Infra Fluency",
+    meta: "Goal: by Day 7 you can run models from 3 providers, inspect internals, run an agent loop, score outputs. Push public end of week.",
+    days: [
+      { d: 1, title: "Environment & First Inference", tasks: [
+        "Fresh env (uv/conda), install torch + transformers + openai + anthropic + jupyter",
+        "Verify CUDA / MPS works (torch.cuda.is_available())",
+        "Create new GitHub repo, push empty README",
+        "Run notebooks/01_first_inference.ipynb end-to-end",
+        "Read: Illustrated Transformer (30 min)",
+        "Commit: first inference notebook + requirements.txt"
+      ]},
+      { d: 2, title: "Transformer Internals", tasks: [
+        "Read nanoGPT model.py end-to-end, annotate",
+        "Build Mini-1: token inspector",
+        "Build Mini-1: attention heatmaps (6 plots, 2 layers × 3 heads)",
+        "Identify 2-3 distinct head patterns; write observation cell",
+        "Read: §1-3 Mathematical Framework for Transformer Circuits",
+        "Commit: 02_attention_visualizer.ipynb"
+      ]},
+      { d: 3, title: "Agent Loops & ReAct", tasks: [
+        "Read ReAct paper §1-4",
+        "Build 03_react_agent.ipynb (100 lines, no frameworks)",
+        "Get 5/5 toy multi-hop questions solved",
+        "Try the 3 failure-injection exercises in the notebook",
+        "Read: Reflexion + Toolformer abstracts",
+        "Commit: working ReAct loop"
+      ]},
+      { d: 4, title: "Consistency & SelfCheckGPT", tasks: [
+        "Read SelfCheckGPT paper",
+        "Build consistency checker (N=5 samples, 3 similarity metrics)",
+        "Run on 20 questions, save scores",
+        "Decide: prompt-injection OR steering as Mini-4",
+        "Read: TruthfulQA",
+        "Commit: hallucination scorer"
+      ]},
+      { d: 5, title: "RAG Distractor Lab (Mini-3)", tasks: [
+        "Build minimal RAG (~150 lines, chromadb + bge-small)",
+        "Implement 3 corruption modes (lost-in-middle, distractor injection, adversarial)",
+        "Run 100-q subset, save raw JSON",
+        "Make first baseline heatmap (position × distractor count)",
+        "Read: Lost in the Middle + Power of Noise",
+        "Commit: RAG pipeline + first heatmap"
+      ]},
+      { d: 6, title: "Multi-Provider Eval Runner", tasks: [
+        "Flesh out providers.py and runners.py (async + disk cache)",
+        "Run Day 5 sweep across OpenAI + Anthropic + local",
+        "Produce 3-line cross-model overlay plot",
+        "STRETCH: start Mini-4 steering vectors if ahead",
+        "Read: HELM intro + design choices section",
+        "Commit: multi-model results JSON"
+      ]},
+      { d: 7, title: "Clean, Document, Push Public", tasks: [
+        "Restructure repo (src/ notebooks/ data/ results/ figures/)",
+        "Write the README — what / why / how to run",
+        "Add LOG.md with daily entries",
+        "3 figures worth showing a mentor",
+        "MAKE REPO PUBLIC",
+        "Read: BIG-bench intro"
+      ]},
+    ]
+  },
+  {
+    week: 2, title: "Week 2 — Research System",
+    meta: "Goal: by Day 14 you have real results — ≥1 phase-diagram finding across ≥2 models + ≥1 mitigation A/B.",
+    days: [
+      { d: 8, title: "Distractor Generator (depth)", tasks: [
+        "Generalize Day 5 injection into distractors.py (6 axes)",
+        "Add semantic-distance bucketing with embeddings",
+        "Add token-length axis with tokenizer-aware padding",
+        "Write pytest unit tests for the generator",
+        "Commit: parameterizable generator + tests"
+      ]},
+      { d: 9, title: "Adversarial Suite", tasks: [
+        "Build the prompt-injection dataset (Mini-2 taxonomy)",
+        "Wire adversarial dataset into distractor generator",
+        "Build generate_perturbation_set(question, axes)",
+        "Smoke-test on 10 questions",
+        "Commit: unified perturbation interface"
+      ]},
+      { d: 10, title: "Scoring Metrics", tasks: [
+        "Implement accuracy, consistency, hallucination, collapse-rate, tool-misuse",
+        "Bootstrap CI helper",
+        "Add cost-per-correct (this is your infra-edge signal)",
+        "Unit-test metrics on synthetic data",
+        "Commit: metrics module with CIs"
+      ]},
+      { d: 11, title: "Large-Scale Run", tasks: [
+        "FREEZE the runner code (no edits during sweep)",
+        "Run full sweep: 3 models × ~200 q × ~5 perturbations",
+        "Monitor cost — kill if >$80 before completion",
+        "Save unified parquet of ≥10k rows",
+        "Commit: results parquet (or pointer to it)"
+      ]},
+      { d: 12, title: "Dashboards", tasks: [
+        "Build 05_distractor_phase_diagram.ipynb analysis",
+        "Make headline 2D heatmap (density × position) per model",
+        "Make cross-model overlay with bootstrap CI bands",
+        "Look for sigmoidal curves → candidate phase boundaries",
+        "Export 3 figures as PDF + PNG (300dpi)",
+        "Commit: notebook + figures/"
+      ]},
+      { d: 13, title: "Mitigations", tasks: [
+        "Implement self-check mitigation",
+        "Implement dual-pass reasoning",
+        "Implement retrieval filter",
+        "Implement confidence-gated abstention",
+        "(Optional) steering-vector mitigation if Mini-4 worked",
+        "Re-run subset of sweep with each mitigation",
+        "Commit: mitigation comparison table"
+      ]},
+      { d: 14, title: "Failure Analysis", tasks: [
+        "Pick 5 representative failed trajectories",
+        "100-word case study each (input / what went wrong / why)",
+        "These are the most-read part of your blog post",
+        "Commit: case-studies.md"
+      ]},
+    ]
+  },
+  {
+    week: 3, title: "Week 3 — Finalization & Submission",
+    meta: "Goal: by Day 21 you submit MATS with a polished portfolio.",
+    days: [
+      { d: 15, title: "Polish Architecture", tasks: [
+        "Delete unused code; docstring everything used",
+        "Add `make repro` (or shell script) that rebuilds headline figure",
+        "Test on fresh clone — 30 min from zero to figure",
+        "Commit: clean repo state"
+      ]},
+      { d: 16, title: "Visualizations", tasks: [
+        "Restyle every plot: consistent fonts, palette, captions",
+        "Build the HERO figure (Twitter/LinkedIn artifact)",
+        "Export 6-10 publication-quality figures",
+        "Commit: figures/"
+      ]},
+      { d: 17, title: "Writeup — Methods / Findings / Limits", tasks: [
+        "Draft methodology section (~600 words)",
+        "Draft findings section (~600 words)",
+        "Draft limitations section (~600 words) — claim less, demonstrate more",
+        "Commit: drafts/blog_v1.md"
+      ]},
+      { d: 18, title: "Diagrams & Tables", tasks: [
+        "Architecture diagram (Excalidraw)",
+        "Benchmark table (markdown)",
+        "Embed both in draft",
+        "Commit: blog_v2.md"
+      ]},
+      { d: 19, title: "Blog Post — Final", tasks: [
+        "Tighten to ~2000 words, ruthless trim",
+        "Strong intro + stronger conclusion",
+        "Title test: read aloud to a friend",
+        "PUBLISH (personal site / LessWrong / EAF / Substack)",
+        "Cross-link from repo README",
+        "Commit: published URL in README"
+      ]},
+      { d: 20, title: "Portfolio Polish", tasks: [
+        "Update repo header: tagline, hero figure, blog link",
+        "Take 3-5 screenshots for MATS portfolio section",
+        "Update personal site / LinkedIn",
+        "Commit: assets/screenshots/"
+      ]},
+      { d: 21, title: "Submit MATS", tasks: [
+        "Pick 3 mentors using 07-MATS-Application-Strategy.md",
+        "Read each mentor's last 2 papers; reference in essays",
+        "Draft Essay 1: Why you / why MATS (~300 words)",
+        "Draft Essay 2: Research interests (~300 words)",
+        "Draft Essay 3: Specific research direction proposal (~500 words)",
+        "Final review pass on all essays",
+        "SUBMIT (allow ≥3 days buffer to deadline)"
+      ]},
+    ]
+  },
+];
+
+const STORAGE_KEY = "mats-prep-dashboard-v1";
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { tasks: {}, notes: {}, startDate: null, open: {} }; }
+  catch { return { tasks: {}, notes: {}, startDate: null, open: {} }; }
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+let state = loadState();
+
+function taskKey(d, i) { return `d${d}-t${i}`; }
+function dayKey(d) { return `d${d}`; }
+
+function totalTasks() { return PLAN.reduce((a,w) => a + w.days.reduce((b,d) => b + d.tasks.length, 0), 0); }
+function doneTasks() { return Object.values(state.tasks).filter(Boolean).length; }
+function weekDoneTasks(w) {
+  return w.days.reduce((acc, day) => acc + day.tasks.filter((_, i) => state.tasks[taskKey(day.d, i)]).length, 0);
+}
+function weekTotalTasks(w) { return w.days.reduce((a,d) => a + d.tasks.length, 0); }
+function dayDone(day) { return day.tasks.every((_, i) => state.tasks[taskKey(day.d, i)]); }
+
+function render() {
+  const root = document.getElementById("weeks");
+  root.innerHTML = "";
+  for (const w of PLAN) {
+    const wel = document.createElement("section");
+    wel.className = "week";
+    const wDone = weekDoneTasks(w), wTotal = weekTotalTasks(w);
+    const wPct = wTotal ? Math.round(100 * wDone / wTotal) : 0;
+    wel.innerHTML = `
+      <h2>${w.title}</h2>
+      <div class="week-meta">${w.meta} — <strong>${wDone}/${wTotal}</strong> (${wPct}%)</div>
+      <div class="week-bar"><div style="width:${wPct}%"></div></div>
+    `;
+    for (const day of w.days) {
+      const det = document.createElement("details");
+      det.className = "day";
+      const dk = dayKey(day.d);
+      if (state.open[dk]) det.setAttribute("open", "");
+      det.addEventListener("toggle", () => { state.open[dk] = det.open; saveState(); });
+      const isDone = dayDone(day);
+      det.innerHTML = `
+        <summary>
+          <span class="chev">▶</span>
+          <span class="title">Day ${day.d} — ${day.title}</span>
+          <span class="pill ${isDone ? 'done' : ''}">${day.tasks.filter((_,i)=>state.tasks[taskKey(day.d,i)]).length}/${day.tasks.length}</span>
+        </summary>
+        <div class="tasks">
+          ${day.tasks.map((t, i) => {
+            const k = taskKey(day.d, i);
+            const checked = state.tasks[k] ? "checked" : "";
+            return `<div class="task">
+              <input type="checkbox" id="${k}" ${checked} onchange="toggleTask('${k}')" />
+              <label for="${k}" class="${state.tasks[k] ? 'done' : ''}">${escapeHtml(t)}</label>
+            </div>`;
+          }).join("")}
+          <textarea class="notes" placeholder="Notes for Day ${day.d}..." onchange="saveNote('${dk}', this.value)">${escapeHtml(state.notes[dk] || "")}</textarea>
+        </div>
+      `;
+      wel.appendChild(det);
+    }
+    root.appendChild(wel);
+  }
+  renderOverall();
+}
+
+function renderOverall() {
+  const t = totalTasks(), d = doneTasks();
+  const pct = t ? Math.round(100 * d / t) : 0;
+  document.getElementById("overallPct").textContent = pct + "%";
+  document.getElementById("overallCount").textContent = `${d} of ${t} tasks complete`;
+  document.getElementById("overallBar").style.width = pct + "%";
+  if (state.startDate) {
+    document.getElementById("startDate").textContent = state.startDate;
+    const start = new Date(state.startDate);
+    const today = new Date();
+    const ms = today.setHours(0,0,0,0) - start.setHours(0,0,0,0);
+    const day = Math.floor(ms / (1000*60*60*24)) + 1;
+    if (day >= 1 && day <= 21) {
+      document.getElementById("dayLabel").textContent = `Day ${day} of 21`;
+    } else if (day < 1) {
+      document.getElementById("dayLabel").textContent = `${-day+1} days to start`;
+    } else {
+      document.getElementById("dayLabel").textContent = `${day-21} days past finish`;
+    }
+  } else {
+    document.getElementById("startDate").textContent = "not set";
+    document.getElementById("dayLabel").textContent = "—";
+  }
+}
+
+function toggleTask(k) {
+  state.tasks[k] = !state.tasks[k];
+  saveState();
+  render();
+}
+
+function saveNote(dk, value) {
+  state.notes[dk] = value;
+  saveState();
+}
+
+function setStartDate() {
+  const v = prompt("Start date (YYYY-MM-DD):", state.startDate || new Date().toISOString().slice(0,10));
+  if (v) { state.startDate = v; saveState(); renderOverall(); }
+}
+
+function resetAll() {
+  if (!confirm("Reset all progress? This cannot be undone.")) return;
+  state = { tasks: {}, notes: {}, startDate: null, open: {} };
+  saveState();
+  render();
+}
+
+function expandAll(open) {
+  document.querySelectorAll("details.day").forEach(d => {
+    d.open = open;
+    state.open[d.querySelector('input[type=checkbox]')?.id?.split('-')[0]] = open;
+  });
+  saveState();
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "mats-prep-progress.json";
+  a.click();
+}
+
+function importJSON() {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json";
+  inp.onchange = e => {
+    const f = e.target.files[0];
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.tasks) throw new Error("invalid");
+        state = Object.assign({ tasks:{}, notes:{}, open:{}, startDate:null }, data);
+        saveState(); render();
+      } catch { alert("Invalid file."); }
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+render();
+</script>
+</body>
+</html>

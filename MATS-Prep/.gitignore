@@ -1,0 +1,12 @@
+# runtime cruft
+.cache/
+results/*.parquet
+results/*.json
+figures/*.png
+figures/*.pdf
+data/raw/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+.env.local
