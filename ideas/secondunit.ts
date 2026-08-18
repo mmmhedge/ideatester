@@ -21,6 +21,8 @@ export const secondunit: Idea = {
     { q: "What do you need from me?", a: "About a year of POS and bank statements from your current unit, plus your franchise agreement. Nothing else to start." },
     { q: "Does this work for any brand?", a: "We're starting with a small group of service-based franchises in one metro while we build out the model. Tell us your brand and we'll let you know." },
     { q: "Do you sell my data or push me toward one lender?", a: "No brand or lender pays us more to be ranked higher. If your numbers don't support a second unit yet, we'll tell you that too." },
+    { q: "Are you a lender?", a: "No. We're not a lender and we don't decide who gets approved. We hand your information to matched lenders for a flat fee and step back — rate and term talks happen directly with them, not through us." },
+    { q: "Does the franchisor's disclosure document still apply here?", a: "Yes. Nothing here replaces your FDD. By law you get it at least 14 days before signing anything or paying anything — we work around that window, not around the law." },
   ],
   form: {
     fields: [
