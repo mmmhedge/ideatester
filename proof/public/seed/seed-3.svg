@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs>
+    <filter id="grain3"><feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.03 0"/></filter>
+  </defs>
+  <rect width="640" height="480" fill="#eee6d3"/>
+  <rect width="640" height="480" filter="url(#grain3)"/>
+  <g transform="rotate(-3 320 240)" stroke="#2a2a2a" fill="none" stroke-width="2.4" stroke-linecap="round" opacity="0.85">
+    <path d="M100 150 C 150 140, 190 165, 250 148 S 360 158, 430 142"/>
+    <path d="M100 190 C 160 182, 230 200, 300 186"/>
+    <circle cx="470" cy="220" r="26"/>
+  </g>
+  <g transform="rotate(3 500 390)">
+    <path d="M470 380 L 530 380 M 470 390 L 530 390 M 470 400 L 510 400" stroke="#8a1f1f" stroke-width="2.5" opacity="0.75"/>
+    <text x="500" y="365" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#8a1f1f" opacity="0.8">STAPLED</text>
+  </g>
+  <rect x="0" y="0" width="640" height="480" fill="none" stroke="#d8ceb6" stroke-width="10"/>
+</svg>
